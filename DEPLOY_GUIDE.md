@@ -1,4 +1,6 @@
-# 部署项目到GitHub Pages指南
+ # 如何在GitHub上使用GitHub Pages显示静态页面
+
+GitHub Pages是GitHub提供的静态网站托管服务，允许您直接从GitHub仓库托管静态HTML、CSS和JavaScript文件。以下是如何使用GitHub Pages在GitHub上显示静态页面的完整指南：
 
 ## 前置条件
 - 已安装Node.js和pnpm
@@ -54,6 +56,7 @@ git commit -m "Initial commit"
 ```json
 "homepage": "https://your-github-username.github.io/your-repo-name",
 "build:client": "vite build --base=/your-repo-name/ --outDir dist",
+"deploy": "gh-pages -d dist"
 ```
 
 3. **替换示例**：
@@ -63,6 +66,8 @@ git commit -m "Initial commit"
 "build:client": "vite build --base=/my-website/ --outDir dist",
 ```
 
+> **重要提示**：请将 `your-github-username` 和 `your-repo-name` 替换为您的实际GitHub用户名和仓库名称！
+> 
 > **说明**：
 > - `homepage`：指定网站部署后的访问URL
 > - `--base`：设置网站的基础路径，必须与仓库名称一致
@@ -101,20 +106,60 @@ git branch
    - 点击 **Save** 按钮
 
 ### 6. 验证部署
-部署完成后，你可以通过以下方式访问你的网站:
+## 6. 查看已部署的静态页面
+
+部署完成后，你可以通过以下方式访问并显示你的静态页面:
+
+### 访问网站
 - 网址格式: `https://your-github-username.github.io/your-repo-name`
 - 在GitHub仓库的 **Settings > Pages** 页面顶部可以找到自动生成的网址
 - 注意: 首次部署可能需要1-10分钟才能生效，请耐心等待
 
+### 验证页面显示
+1. 打开生成的网址
+2. 确认页面内容正确显示
+3. 检查页面布局和样式是否正常加载
+4. 测试所有链接和交互功能
+
 ## 常见问题解决
 
 ### 部署后页面空白或404错误
-- **检查配置**: 确保package.json中的homepage和base路径已替换为您的实际GitHub信息，格式应为"https://[用户名].github.io/[仓库名]"和"--base=/[仓库名]/"
-- **仓库设置**: 确认GitHub仓库设置中的GitHub Pages源已设置为gh-pages分支和根目录
-- **资源路径**: 按F12打开浏览器控制台，检查是否有404错误(资源加载失败)
-- **清除缓存**: 尝试Ctrl+Shift+R强制刷新页面，清除浏览器缓存
-- **重新构建**: 运行`pnpm run build`重新构建项目，确保没有编译错误
-- **等待生效**: 首次部署可能需要1-10分钟才能在GitHub Pages上完全生效
+这是GitHub Pages最常见的问题，按以下步骤排查：
+
+1. **检查package.json配置** (关键步骤):
+   ```json
+   "homepage": "https://your-actual-username.github.io/your-actual-repo-name",
+   "build:client": "vite build --base=/your-actual-repo-name/ --outDir dist",
+   ```
+   - 确保已将`your-actual-username`替换为您的GitHub用户名
+   - 确保已将`your-actual-repo-name`替换为您的GitHub仓库名称
+   - 仓库名称区分大小写，请确保与GitHub上完全一致
+
+2. **验证gh-pages依赖安装**:
+   ```bash
+   # 确保gh-pages已安装
+   pnpm list gh-pages
+   # 如果未安装，重新安装
+   pnpm add -D gh-pages
+   ```
+
+3. **检查构建输出**:
+   ```bash
+   # 查看dist目录是否有内容
+   ls -la dist
+   # 确保index.html存在
+   cat dist/index.html | grep -i "<title>"
+   ```
+
+4. **检查GitHub Pages设置**:
+   - 确认已选择`gh-pages`分支
+   - 确认已选择根目录`/ (root)`
+   - 点击"Save"按钮后查看是否有绿色成功提示
+
+5. **检查浏览器控制台**:
+   - 按F12打开开发者工具
+   - 查看"Console"和"Network"标签页是否有404错误
+   - 特别注意CSS和JS文件是否加载失败(通常是base路径设置错误)
 
 ### 无法访问GitHub Pages网站
 - 确认仓库名称和用户名拼写正确
