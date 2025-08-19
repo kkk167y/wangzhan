@@ -3,11 +3,11 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-"homepage": "https://your-github-username.github.io/your-repo-name",
+"homepage": "https://kkk167y.github.io/wangzhan",
   "scripts": {
     "dev:client": "vite --host --port 3000",
     "dev": "pnpm dev:client",
-  "build:client": "vite build --base=/your-repo-name/ --outDir dist",
+  "build:client": "vite build --base=/wangzhan/ --outDir dist",
   "build": "rimraf dist && pnpm build:client",
     "predeploy": "pnpm build",
     "deploy": "npx gh-pages -d dist"
