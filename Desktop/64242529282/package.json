@@ -3,14 +3,14 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "homepage": "https://your-github-kkk167y.github.io/wangzhan",
+"homepage": "https://kkk167y.github.io/wangzhan",
   "scripts": {
     "dev:client": "vite --host --port 3000",
     "dev": "pnpm dev:client",
-    "build:client": "vite build --base=/wangzhan/ --outDir dist",
-    "build": "rm -rf dist && pnpm build:client",
+  "build:client": "vite build --base=/wangzhan/ --outDir dist",
+  "build": "rimraf dist && pnpm build:client",
     "predeploy": "pnpm build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "npx gh-pages -d dist"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -31,7 +31,9 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.7.2",
-    "vite": "^6.2.0",
-    "vite-tsconfig-paths": "^5.1.4"
+  "vite": "^6.2.0",
+  "vite-tsconfig-paths": "^5.1.4",
+  "rimraf": "^5.0.5",
+  "gh-pages": "^6.1.1"
   }
 }

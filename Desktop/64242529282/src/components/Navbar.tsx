@@ -33,13 +33,10 @@ const Navbar = ({ scrolled }: NavbarProps) => {
           </a>
           
            {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+           <nav className="hidden md:flex items-center space-x-8">
             <a href="#about" className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors">关于我们</a>
             <a href="#services" className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors">服务</a>
             <a href="#team" className="text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition-colors">团队</a>
-            <a href="/admin" className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors">
-              <i className="fa-solid fa-lock mr-1"></i> 后台管理
-            </a>
             <a href="#contact" className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-medium transition-all transform hover:scale-105">
               联系我们
             </a>
