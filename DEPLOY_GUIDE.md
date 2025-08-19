@@ -7,6 +7,76 @@ GitHub Pages是GitHub提供的静态网站托管服务，允许您直接从GitHu
 - 已创建GitHub账号和仓库
 - 本地已安装Git
 
+## 为什么node_modules文件不应提交到GitHub
+
+在开发过程中，你可能会注意到项目根目录下有一个`node_modules`文件夹，里面包含了项目的所有依赖包。这个文件夹不应直接提交到GitHub，主要原因如下：
+
+### 1. **体积过大**
+`node_modules`文件夹通常包含成百上千个依赖文件，体积可能达到数百MB甚至GB级别，会显著增加仓库大小，影响克隆和推送速度。
+
+### 2. **冗余信息**
+所有依赖信息都已经记录在`package.json`和`pnpm-lock.yaml`文件中，任何人都可以通过这些文件重新安装完全相同版本的依赖。
+
+### 3. **版本控制问题**
+第三方依赖的代码不应该由你的项目仓库管理，它们有自己的版本控制和更新周期。
+
+### 4. **安全考虑**
+某些依赖可能包含敏感信息或编译后的二进制文件，不适合公开分享。
+
+### 5. **标准开发实践**
+这是JavaScript/TypeScript项目的行业标准做法，几乎所有项目都会忽略`node_modules`文件夹。
+
+### 如何正确处理依赖
+
+1. **使用.gitignore文件**
+项目根目录下的`.gitignore`文件应该已经包含了对`node_modules`的忽略规则：
+```
+# 依赖
+/node_modules
+.pnp
+.pnp.js
+```
+
+2. **安装依赖**
+当克隆项目到新环境时，只需运行以下命令即可重新安装所有依赖：
+```bash
+pnpm install
+```
+
+3. **依赖更新**
+需要更新依赖时，使用pnpm命令而不是手动修改`node_modules`：
+```bash
+# 更新所有依赖
+pnpm update
+
+# 更新特定依赖
+pnpm update package-name
+```
+
+## 部署所需的关键文件
+
+为确保GitHub Pages正常显示您的网站，以下文件是必需的，缺失可能导致网站无法正常构建或显示：
+
+### 1. **构建和配置文件**
+- `package.json`: 包含项目依赖和构建脚本，缺失将无法运行构建命令
+- `vite.config.ts`: Vite构建配置，缺失将导致构建过程出错
+- `tsconfig.json`: TypeScript配置，缺失将导致TypeScript编译错误
+- `tailwind.config.js`: Tailwind CSS配置，缺失将导致样式异常
+
+### 2. **源代码文件**
+- `src/`: 包含所有React组件和页面代码，缺失将导致网站内容不完整
+- `index.html`: 网站入口文件，缺失将导致404错误
+
+### 3. **部署相关文件**
+- `.github/workflows/`: 如果使用GitHub Actions自动部署，缺失将导致自动部署失败
+- `deploy.yml`: 部署配置文件，缺失将导致部署命令无法正常执行
+
+### 缺失文件的影响
+- **构建失败**: 缺少配置文件会导致`pnpm build`命令失败，无法生成可部署的静态文件
+- **内容不完整**: 缺少源代码文件会导致网站显示空白或功能缺失
+- **样式异常**: 缺少Tailwind配置会导致样式错乱
+- **404错误**: 缺少入口文件会导致GitHub Pages无法找到网站首页
+
 ## 部署步骤
 
 ### 1. 安装部署依赖
@@ -184,7 +254,7 @@ git checkout -b main
 git branch -M main
 ```
 
-### 部署命令失败
+ ### 部署命令失败
 - 确保已正确安装gh-pages依赖：`pnpm add -D gh-pages`
 - 检查是否有足够的权限推送到GitHub仓库
 - 确认本地Git已正确配置用户信息
@@ -281,8 +351,91 @@ pnpm deploy:gitee
 | 腾讯云COS+CDN | 配置简单，控制台友好 | 50GB存储空间，每月10GB流量 | 个人项目、演示站点 | ★★★★☆ |
 | Cloudflare Pages | 全球CDN，自动HTTPS | 无限项目，无流量限制 | 对访问速度要求不高的国际站点 | ★★★☆☆ |
 
-## 自动部署(可选)
-可以通过GitHub Actions设置自动部署，在每次推送到main分支时自动更新网站。
+## 自动部署(推荐)
+
+通过GitHub Actions可以实现代码推送后自动部署到GitHub Pages，无需手动执行部署命令。
+
+### 配置步骤
+
+1. **创建部署配置文件**
+
+项目中已添加自动部署配置文件 `.github/workflows/deploy.yml`，内容如下：
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          
+      - name: Install pnpm
+        run: npm install -g pnpm
+        
+      - name: Install dependencies
+        run: pnpm install
+        
+      - name: Build project
+        run: pnpm build
+        
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+          
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages
+```
+
+2. **启用GitHub Pages**
+
+1. 打开GitHub仓库页面
+2. 点击 **Settings > Pages**
+3. 在 **Build and deployment > Source** 部分，选择 **GitHub Actions**
+4. 保存设置
+
+3. **触发自动部署**
+
+每次将代码推送到main分支时，部署工作流会自动触发：
+
+```bash
+git add .
+git commit -m "Add automatic deployment"
+git push origin main
+```
+
+您也可以在GitHub仓库的 **Actions** 标签页手动触发部署工作流。
+
+### 查看部署状态
+
+1. 打开GitHub仓库页面
+2. 点击 **Actions** 标签
+3. 选择最新的"Deploy to GitHub Pages"工作流
+4. 查看部署进度和结果
 
 ## 其他国内部署平台详细指南
 
